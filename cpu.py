@@ -11,6 +11,8 @@ PUSH = 0b01000101
 
 CMP = 0b10100111
 JMP = 0b01010100
+JEQ = 0b01010101
+JNE = 0b01010110
 class CPU:
     """Main CPU class."""
 
@@ -35,8 +37,10 @@ class CPU:
             0b10100010: self.mul,
             0b01000110: self.pop,
             0b01000101: self.push,
-            0b01000101: self.cmp_instruction,
-            0b01010100: self.jmp
+            0b10100111: self.cmp_instruction,
+            0b01010100: self.jmp,
+            0b01010101: self.jeq,
+            0b01010110: self.jne
         }
     
     def ram_read(self, address):
@@ -92,6 +96,20 @@ class CPU:
         #set pc to address at register
         self.PC = self.reg[operand_a]
         return (0, True)
+    
+    def jeq(self, operand_a, operand_b):
+        #set pc to address at register if flag is true
+        if self.FL == 0b00000001:
+            self.PC = self.reg[operand_a]
+            return(0, True)
+        return(2, True)
+    
+    def jne(self, operand_a, operand_b):
+        #set pc to address at register if flag is false
+        if self.FL != 0b00000001:
+            self.PC = self.reg[operand_a]
+            return(0, True)
+        return(2, True)
 
     def load(self, program):
         """Load a program into memory."""
