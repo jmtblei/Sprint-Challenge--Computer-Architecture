@@ -9,6 +9,7 @@ MUL = 0b10100010
 POP = 0b01000110
 PUSH = 0b01000101
 
+CMP = 0b10100111
 class CPU:
     """Main CPU class."""
 
@@ -33,8 +34,7 @@ class CPU:
             0b10100010: self.mul,
             0b01000110: self.pop,
             0b01000101: self.push,
-            0b01010000: self.call,
-            0b00010001: self.ret
+            0b01000101: self.cmp_instruction
         }
     
     def ram_read(self, address):
@@ -80,6 +80,11 @@ class CPU:
         #write value to RAM at SP
         self.ram_write(value, self.SP)
         return(2, True)
+    
+    def cmp_instruction(self, operand_a, operand_b):
+        #compare and sets flag
+        self.alu("CMP", operand_a,operand_b)
+        return (3, True)
 
     def load(self, program):
         """Load a program into memory."""
@@ -109,6 +114,13 @@ class CPU:
         elif op == "MUL":
             self.reg[reg_a] = (self.reg[reg_a]) * (self.reg[reg_b])
             return 2
+        elif op == "CMP":
+            if self.reg[reg_a] > self.reg[reg_b]:
+                self.FL = 0b00000010
+            elif self.reg[reg_a] < self.reg[reg_b]:
+                self.FL = 0b00000100
+            elif self.reg[reg_a] == self.reg[reg_b]:
+                self.FL = 0b00000001
         else:
             raise Exception("Unsupported ALU operation")
 
