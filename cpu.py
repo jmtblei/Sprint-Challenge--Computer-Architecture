@@ -10,6 +10,7 @@ POP = 0b01000110
 PUSH = 0b01000101
 
 CMP = 0b10100111
+JMP = 0b01010100
 class CPU:
     """Main CPU class."""
 
@@ -34,7 +35,8 @@ class CPU:
             0b10100010: self.mul,
             0b01000110: self.pop,
             0b01000101: self.push,
-            0b01000101: self.cmp_instruction
+            0b01000101: self.cmp_instruction,
+            0b01010100: self.jmp
         }
     
     def ram_read(self, address):
@@ -85,6 +87,11 @@ class CPU:
         #compare and sets flag
         self.alu("CMP", operand_a,operand_b)
         return (3, True)
+    
+    def jmp(self, operand_a, operand_b):
+        #set pc to address at register
+        self.PC = self.reg[operand_a]
+        return (0, True)
 
     def load(self, program):
         """Load a program into memory."""
